@@ -14,14 +14,14 @@ export default async function handler(req, res) {
   try {
     const body = {
       page: 1,
-      per_page: parseInt(count) || 8
+      per_page: parseInt(count) || 8,
+      person_titles: ['CEO', 'Founder', 'Co-Founder', 'Managing Director', 'Director'],
+      q_organization_keyword_tags: industry ? [industry] : [],
+      organization_locations: location ? [location] : [],
+      organization_num_employees_ranges: (minSize && maxSize) ? [`${minSize},${maxSize}`] : []
     };
 
-    if (industry) body.q_organization_keyword_tags = [industry];
-    if (location) body.organization_locations = [location];
-    if (minSize && maxSize) body.organization_num_employees_ranges = [`${minSize},${maxSize}`];
-
-    const apolloRes = await fetch('https://api.apollo.io/v1/mixed_companies/search', {
+    const apolloRes = await fetch('https://api.apollo.io/v1/mixed_people/search', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -41,19 +41,22 @@ export default async function handler(req, res) {
       });
     }
 
-    const organizations = apolloData.organizations || [];
+    const people = apolloData.people || [];
 
-    const cleaned = organizations.map(c => ({
-      name: c.name || '',
-      website: c.website_url || c.primary_domain || '',
-      industry: c.industry || '',
-      headcount: c.estimated_num_employees || '',
-      location: [c.city, c.state, c.country].filter(Boolean).join(', '),
-      linkedin: c.linkedin_url || '',
-      phone: c.sanitized_phone || c.primary_phone?.number || '',
-      keywords: (c.keywords || []).slice(0, 5).join(', '),
-      founded: c.founded_year || '',
-      description: c.short_description || ''
+    const cleaned = people.map(p => ({
+      name: p.name || '',
+      title: p.title || '',
+      email: p.email || '',
+      linkedin: p.linkedin_url || '',
+      phone: p.sanitized_phone || '',
+      company: p.organization?.name || '',
+      website: p.organization?.website_url || p.organization?.primary_domain || '',
+      industry: p.organization?.industry || '',
+      headcount: p.organization?.estimated_num_employees || '',
+      location: [p.city, p.state, p.country].filter(Boolean).join(', '),
+      founded: p.organization?.founded_year || '',
+      description: p.organization?.short_description || '',
+      keywords: (p.organization?.keywords || []).slice(0, 5).join(', ')
     }));
 
     return res.status(200).json({ success: true, count: cleaned.length, companies: cleaned });
@@ -62,4 +65,3 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: false, error: err.message, companies: [] });
   }
 }
-
