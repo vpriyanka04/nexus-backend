@@ -13,7 +13,6 @@ export default async function handler(req, res) {
 
   try {
     const body = {
-      api_key: APOLLO_KEY,
       page: 1,
       per_page: parseInt(count) || 8
     };
@@ -24,14 +23,22 @@ export default async function handler(req, res) {
 
     const apolloRes = await fetch('https://api.apollo.io/v1/mixed_companies/search', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': APOLLO_KEY
+      },
       body: JSON.stringify(body)
     });
 
     const apolloData = await apolloRes.json();
 
     if (!apolloRes.ok) {
-      return res.status(200).json({ success: false, apolloStatus: apolloRes.status, apolloError: apolloData, companies: [] });
+      return res.status(200).json({
+        success: false,
+        apolloStatus: apolloRes.status,
+        apolloError: apolloData,
+        companies: []
+      });
     }
 
     const organizations = apolloData.organizations || [];
@@ -55,3 +62,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: false, error: err.message, companies: [] });
   }
 }
+```
+
+The key change is line:
+```
+'X-Api-Key': APOLLO_KEY  ← moved from body to header
