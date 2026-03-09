@@ -9,8 +9,4 @@ export default function handler(req, res) {
     anthropic_configured: !!process.env.ANTHROPIC_API_KEY
   });
 }
-```
 
-Nothing after the closing `}` — commit and then visit:
-```
-https://nexus-backend-sooty.vercel.app/api/health
