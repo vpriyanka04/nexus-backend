@@ -11,6 +11,6 @@ export default function handler(req, res) {
 }
 ```
 
-Commit it, then visit:
+Nothing after the closing `}` — commit and then visit:
 ```
 https://nexus-backend-sooty.vercel.app/api/health
