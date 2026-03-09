@@ -62,8 +62,4 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: false, error: err.message, companies: [] });
   }
 }
-```
 
-The key change is line:
-```
-'X-Api-Key': APOLLO_KEY  ← moved from body to header
