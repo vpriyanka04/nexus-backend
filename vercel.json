@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/leads.js": {
-      "maxDuration": 30
-    },
-    "api/health.js": {
-      "maxDuration": 5
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
